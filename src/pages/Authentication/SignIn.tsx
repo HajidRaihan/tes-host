@@ -2,7 +2,7 @@ import React, { SetStateAction, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 // import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
-import { loginUser } from '../../api/authApi';
+// import { loginUser } from '../../api/authApi';
 import ExampleImage from '../../images/logo/logo1.png';
 
 const SignIn: React.FC = () => {
@@ -24,31 +24,31 @@ const SignIn: React.FC = () => {
     setPassword(event.target.value);
   };
 
-  const loginHandler = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const credential = {
-        email: email,
-        password: password,
-      };
+  // const loginHandler = async (e: { preventDefault: () => void }) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
+  //   try {
+  //     const credential = {
+  //       email: email,
+  //       password: password,
+  //     };
 
-      const res = await loginUser(credential);
+  //     const res = await loginUser(credential);
 
-      if (res.user.role !== 'admin') {
-        setIsLoading(false);
-        return;
-      }
+  //     if (res.user.role !== 'admin') {
+  //       setIsLoading(false);
+  //       return;
+  //     }
 
-      if (res) {
-        navigate('/');
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
+  //     if (res) {
+  //       navigate('/');
+  //       setIsLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     setIsLoading(false);
+  //   }
+  // };
   return (
     <div className="mx-32 mt-5">
       {/* <Breadcrumb pageName="Sign In" /> */}
