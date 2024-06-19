@@ -1,4 +1,5 @@
 import { Package } from '../../types/package';
+import React from 'react';
 
 const packageData: Package[] = [
   {
