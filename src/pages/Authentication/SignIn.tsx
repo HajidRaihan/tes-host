@@ -52,7 +52,6 @@ const SignIn: React.FC = () => {
   return (
     <div className="mx-32 mt-5">
       {/* <Breadcrumb pageName="Sign In" /> */}
-      <ToastContainer />
 
       <div className="rounded-sm border border-stroke bg-white shadow-default">
         <div className="flex flex-wrap items-center">
