@@ -1,247 +1,195 @@
-import React, { useState, useEffect } from 'react';
+import { ApexOptions } from 'apexcharts';
+import React, { useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { getAllActivityList } from '../../api/activityApi';
 
-interface ActivityData {
-  jenis_hardware: string;
-  waktu_pengerjaan: string | null;
-  updated_at: string; // Assuming updated_at is a string, change to Date if it's a Date object
-}
-
-interface ChartOneState {
-  categories: string[];
-  series: { name: string; data: number[] }[];
-  totalWaktuPengerjaan: number;
-  averageWaktuPengerjaan: number;
-  maxCategory: string;
-  maxWaktuPengerjaan: number;
-}
-
-const options = {
+const options: ApexOptions = {
+  legend: {
+    show: false,
+    position: 'top',
+    horizontalAlign: 'left',
+  },
+  colors: ['#3C50E0', '#80CAEE'],
   chart: {
     fontFamily: 'Satoshi, sans-serif',
-    type: 'bar',
-    height: 350,
+    height: 335,
+    type: 'area',
+    dropShadow: {
+      enabled: true,
+      color: '#623CEA14',
+      top: 10,
+      blur: 4,
+      left: 0,
+      opacity: 0.1,
+    },
+
     toolbar: {
       show: false,
     },
   },
-  colors: ['#00008B'], // Dark blue color for bars
-  plotOptions: {
-    bar: {
-      horizontal: false,
-      columnWidth: '50%',
-      endingShape: 'rounded',
+  responsive: [
+    {
+      breakpoint: 1024,
+      options: {
+        chart: {
+          height: 300,
+        },
+      },
+    },
+    {
+      breakpoint: 1366,
+      options: {
+        chart: {
+          height: 350,
+        },
+      },
+    },
+  ],
+  stroke: {
+    width: [2, 2],
+    curve: 'straight',
+  },
+  // labels: {
+  //   show: false,
+  //   position: "top",
+  // },
+  grid: {
+    xaxis: {
+      lines: {
+        show: true,
+      },
+    },
+    yaxis: {
+      lines: {
+        show: true,
+      },
     },
   },
   dataLabels: {
-    enabled: true,
-    offsetY: -10,
-    style: {
-      fontSize: '12px',
-      colors: ['#000'],
+    enabled: false,
+  },
+  markers: {
+    size: 4,
+    colors: '#fff',
+    strokeColors: ['#3056D3', '#80CAEE'],
+    strokeWidth: 3,
+    strokeOpacity: 0.9,
+    strokeDashArray: 0,
+    fillOpacity: 1,
+    discrete: [],
+    hover: {
+      size: undefined,
+      sizeOffset: 5,
     },
   },
   xaxis: {
-    categories: [],
+    type: 'category',
+    categories: [
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+    ],
+    axisBorder: {
+      show: false,
+    },
+    axisTicks: {
+      show: false,
+    },
   },
   yaxis: {
     title: {
-      text: 'Total Waktu Pengerjaan (menit)',
+      style: {
+        fontSize: '0px',
+      },
     },
-    min: 0, // Ensure y-axis starts from 0
-  },
-  stroke: {
-    curve: 'smooth',
+    min: 0,
+    max: 100,
   },
 };
 
+interface ChartOneState {
+  series: {
+    name: string;
+    data: number[];
+  }[];
+}
+
 const ChartOne: React.FC = () => {
   const [state, setState] = useState<ChartOneState>({
-    categories: [],
     series: [
       {
-        name: 'Waktu Pengerjaan',
-        data: [],
+        name: 'Product One',
+        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
+      },
+
+      {
+        name: 'Product Two',
+        data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
       },
     ],
-    totalWaktuPengerjaan: 0,
-    averageWaktuPengerjaan: 0,
-    maxCategory: '',
-    maxWaktuPengerjaan: 0,
   });
 
-  const [startYear, setStartYear] = useState<number>(2020); // Default start year
-  const [endYear, setEndYear] = useState<number>(2024); // Default end year
-
-  const fetchData = () => {
-    getAllActivityList({ startYear, endYear })
-      .then((res) => {
-        const data: ActivityData[] = res.data;
-
-        // Filter out data that does not match the year range
-        const filteredData = data.filter((item) => {
-          const updatedAtYear = new Date(item.updated_at).getFullYear();
-          return updatedAtYear >= startYear && updatedAtYear <= endYear;
-        });
-
-        if (filteredData.length === 0) {
-          // If no data found with the updated_at year range, reset state
-          setState({
-            categories: [],
-            series: [
-              {
-                name: 'Waktu Pengerjaan',
-                data: [],
-              },
-            ],
-            totalWaktuPengerjaan: 0,
-            averageWaktuPengerjaan: 0,
-            maxCategory: '',
-            maxWaktuPengerjaan: 0,
-          });
-          return;
-        }
-
-        const categoryTimeMap: Map<string, number> = new Map();
-        let totalWaktuPengerjaan = 0;
-
-        filteredData.forEach((item) => {
-          if (item.waktu_pengerjaan !== null) {
-            const waktuPengerjaan = parseInt(item.waktu_pengerjaan, 10);
-            totalWaktuPengerjaan += waktuPengerjaan;
-
-            const categories = item.jenis_hardware
-              .split(',')
-              .map((cat) => cat.trim());
-            categories.forEach((cat) => {
-              if (categoryTimeMap.has(cat)) {
-                categoryTimeMap.set(
-                  cat,
-                  categoryTimeMap.get(cat)! + waktuPengerjaan,
-                );
-              } else {
-                categoryTimeMap.set(cat, waktuPengerjaan);
-              }
-            });
-          }
-        });
-
-        const uniqueCategories = Array.from(categoryTimeMap.keys());
-        const categoryTimes = uniqueCategories.map(
-          (cat) => categoryTimeMap.get(cat)!,
-        );
-        const averageWaktuPengerjaan =
-          totalWaktuPengerjaan / uniqueCategories.length;
-
-        let maxCategory = '';
-        let maxWaktuPengerjaan = 0;
-        categoryTimeMap.forEach((value, key) => {
-          if (value > maxWaktuPengerjaan) {
-            maxWaktuPengerjaan = value;
-            maxCategory = key;
-          }
-        });
-
-        setState({
-          categories: uniqueCategories,
-          series: [
-            {
-              name: 'Waktu Pengerjaan',
-              data: categoryTimes,
-            },
-          ],
-          totalWaktuPengerjaan,
-          averageWaktuPengerjaan,
-          maxCategory,
-          maxWaktuPengerjaan,
-        });
-      })
-      .catch((error) => {
-        console.error('Error fetching activity data:', error);
-      });
+  const handleReset = () => {
+    setState((prevState) => ({
+      ...prevState,
+    }));
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [startYear, endYear]); // Trigger fetchData whenever startYear or endYear changes
+  handleReset;
 
   return (
-    <div className="sm:px-7.5 col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-5">
-      <div className="mb-3 flex flex-col md:flex-row justify-between gap-4">
-        <div>
-          <h5 className="text-xl font-bold text-black dark:text-white">
-            Hardware Performance
-          </h5>
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex flex-col items-center ">
-            <label className="text-black dark:text-white">Start Year</label>
-            <input
-              type="number"
-              value={startYear}
-              onChange={(e) => setStartYear(parseInt(e.target.value, 10))}
-              className="border rounded p-1 w-24 text-center transition duration-200 ease-in-out focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
+    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
+        <div className="flex w-full flex-wrap gap-3 sm:gap-5">
+          <div className="flex min-w-47.5">
+            <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-primary">
+              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
+            </span>
+            <div className="w-full">
+              <p className="font-semibold text-primary">Total Revenue</p>
+              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+            </div>
           </div>
-          <div className="flex flex-col items-center ">
-            <label className="text-black dark:text-white">End Year</label>
-            <input
-              type="number"
-              value={endYear}
-              onChange={(e) => setEndYear(parseInt(e.target.value, 10))}
-              className="border rounded p-1 w-24 text-center transition duration-200 ease-in-out focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
+          <div className="flex min-w-47.5">
+            <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-secondary">
+              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
+            </span>
+            <div className="w-full">
+              <p className="font-semibold text-secondary">Total Sales</p>
+              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex w-full max-w-45 justify-end">
+          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
+            <button className="rounded bg-white py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark">
+              Day
+            </button>
+            <button className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
+              Week
+            </button>
+            <button className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
+              Month
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="mb-2">
-        <div id="chartOne" className="mx-auto flex justify-center">
+      <div>
+        <div id="chartOne" className="-ml-5">
           <ReactApexChart
-            options={{
-              ...options,
-              xaxis: {
-                ...options.xaxis,
-                categories: state.categories.map(String),
-              },
-            }}
+            options={options}
             series={state.series}
-            type="bar"
+            type="area"
             height={350}
           />
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <h6 className="text-lg font-semibold text-black dark:text-white mb-2">
-          Summary
-        </h6>
-        <div className="flex flex-wrap justify-between">
-          <div className="w-full md:w-1/3 ">
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg">
-              <h6 className="text-md font-medium text-black dark:text-white">
-                Average Waktu Pengerjaan
-              </h6>
-              <p className="text-lg font-bold text-blue-600">
-                {state.averageWaktuPengerjaan.toFixed(2)} menit
-              </p>
-            </div>
-          </div>
-          <div className="w-full md:w-1/3 ">
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg">
-              <h6 className="text-md font-medium text-black dark:text-white">
-                {' '}
-                Max Waktu Pengerjaan
-              </h6>
-              <p className="text-lg font-bold text-blue-600">
-                {state.maxCategory}
-              </p>
-              <p className="text-md font-medium text-black dark:text-white">
-                {state.maxWaktuPengerjaan} menit
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

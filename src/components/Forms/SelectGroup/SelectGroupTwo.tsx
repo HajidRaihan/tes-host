@@ -43,7 +43,7 @@ const SelectGroupTwo: React.FC = () => {
                 fill="#637381"
               ></path>
             </g>
-1          </svg>
+          </svg>
         </span>
 
         <select

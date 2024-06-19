@@ -1,47 +1,36 @@
-import React, { useRef } from 'react';
 import flatpickr from 'flatpickr';
 import { useEffect } from 'react';
 
-const DatePickerOne = ({ label, value, onChange }) => {
-  const inputRef = useRef(null);
+const DatePickerOne = () => {
+  useEffect(() => {
+    // Init flatpickr
+    flatpickr('.form-datepicker', {
+      mode: 'single',
+      static: true,
+      monthSelectorType: 'static',
+      dateFormat: 'M j, Y',
+      prevArrow:
+        '<svg className="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
+      nextArrow:
+        '<svg className="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M1.4 10.8L0 9.4l4-4-4-4L1.4 0l5.4 5.4z" /></svg>',
+    });
 
-  // useEffect(() => {
-  //   const picker = flatpickr(inputRef.current, {
-  //     // mode: 'single',
-  //     static: true,
-  //     monthSelectorType: 'static',
-  //     // dateFormat: 'M j, Y',
-  //     prevArrow:
-  //       '<svg className="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
-  //     nextArrow:
-  //       '<svg className="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M1.4 10.8L0 9.4l4-4-4-4L1.4 0l5.4 5.4z" /></svg>',
-  //     defaultDate: value,
-  //     onChange: (selectedDates) => {
-  //       onChange(selectedDates[0]); // Memperbarui nilai saat tanggal dipilih
-  //     },
-  //   });
-
-  //   return () => {
-  //     picker.destroy(); // Membersihkan flatpickr saat komponen tidak lagi digunakan
-  //   };
-  // }, [value]);
+    
+  }, []);
 
   return (
     <div>
       <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-        {label}
+        Date picker
       </label>
       <div className="relative">
         <input
-          className="form-datepicker w-full rounded border-[1.5px] dark:text-white border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+          className="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
           placeholder="mm/dd/yyyy"
           data-class="flatpickr-right"
-          type="date"
-          ref={inputRef}
-          onChange={onChange}
         />
 
-        {/* <div className="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+        <div className="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
           <svg
             width="18"
             height="18"
@@ -54,7 +43,7 @@ const DatePickerOne = ({ label, value, onChange }) => {
               fill="#64748B"
             />
           </svg>
-        </div> */}
+        </div>
       </div>
     </div>
   );

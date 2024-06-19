@@ -1,4 +1,3 @@
-import React from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import CheckboxFive from '../../components/Checkboxes/CheckboxFive';
 import CheckboxFour from '../../components/Checkboxes/CheckboxFour';
@@ -89,7 +88,7 @@ const FormElements = () => {
               </h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
-              <DatePickerOne label={'Date'} />
+              <DatePickerOne />
               <DatePickerTwo />
             </div>
           </div>

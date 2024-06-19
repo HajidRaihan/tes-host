@@ -1,26 +1,22 @@
-import React from 'react';
+import { useState } from 'react';
 
-const CheckboxTwo = ({ label, isChecked, onChange, options }) => {
-  const handleChange = (e) => {
-    const selectedValue = e.target.value;
-    const isOptionChecked = options.some(
-      (option) => option.toLowerCase() === selectedValue.toLowerCase(),
-    );
-    onChange(isOptionChecked);
-  };
+const CheckboxTwo = () => {
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+
   return (
     <div>
       <label
-        htmlFor={label}
-        className="flex cursor-pointer select-none items-center dark:text-white"
+        htmlFor="checkboxLabelTwo"
+        className="flex cursor-pointer select-none items-center"
       >
         <div className="relative">
           <input
             type="checkbox"
-            id={label}
-            className="sr-only "
-            checked={isChecked} // Menyertakan prop isChecked untuk mengontrol status checkbox
-            onChange={handleChange} // Menyertakan prop onChange untuk menangani perubahan pada checkbox
+            id="checkboxLabelTwo"
+            className="sr-only"
+            onChange={() => {
+              setIsChecked(!isChecked);
+            }}
           />
           <div
             className={`mr-4 flex h-5 w-5 items-center justify-center rounded border ${
@@ -45,7 +41,7 @@ const CheckboxTwo = ({ label, isChecked, onChange, options }) => {
             </span>
           </div>
         </div>
-        {label}
+        Checkbox Text
       </label>
     </div>
   );
